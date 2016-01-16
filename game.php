@@ -2,17 +2,25 @@
 
 $results = [];
 
+function formatAnswers (&$answer, $key) {
+    $answer = $key + 1 . ') ' .  $answer . PHP_EOL;
+};
+
 function doChoice($situation) {
 
     $question = key($situation);
-    $options = $situation[$question];
-    $validAnswers = array_keys($options);
+    $situationChoices = $situation[$question];
+    $potentialAnswers = array_keys($situationChoices);
+    $validInputs = range(1, count($potentialAnswers));
+
+    array_walk($potentialAnswers, 'formatAnswers');
 
     do {
-        $answer = readline($question .' (' . implode(',', $validAnswers) . ')' . PHP_EOL);
-    } while ( !in_array($answer, $validAnswers ));
+        echo $question . PHP_EOL . implode($potentialAnswers) . '=> ';
+        $answer = rtrim( fgets( STDIN ), "\n" );
+    } while ( !in_array($answer, $validInputs));
 
-    $result = $options[$answer];
+    $result = array_values($situationChoices)[$answer - 1];
 
     if (!is_array($result)) {
         echo $result . PHP_EOL;
@@ -32,7 +40,7 @@ $stories = [
                         'climb' => [
                             'you scale the castle walls. eventually you come to a window where you see a king sleeping. what will you do?' => [
                                 'enter' => [
-                                    'the king hasn\t woken up. what will you do to him?' => [
+                                    'the king hasn\'t woken up. what will you do to him?' => [
                                         'wake' => 'the king wakes up and roars angrily. the guards come and beat you to death with guitars',
                                         'kill' => 'as you drive your sword into the kings side his mouth opens and an evil spirit streams out. you\'ve killed the wicked king of Norrland and you are declared a hero'
                                     ]
